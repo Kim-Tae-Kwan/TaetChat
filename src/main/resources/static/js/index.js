@@ -1,5 +1,6 @@
 let stompClient = null;
 let member;
+let channel;
 let num = 0;
 
 $(()=>{
@@ -21,7 +22,7 @@ $(()=>{
 		$('#modal').hide();
 		$('#container').show();
 		
-//		connect();
+		connect();
 		
 	});
 	
@@ -40,18 +41,6 @@ $(()=>{
 			}			
 		}
 	});
-	
-	$('.channel').on('click', async (e)=>{
-		console.log('channel',$(e.target))
-	 	let channel = $(e.target).data('channel');
-		
-		//채널에 속한 메시지 들고오기
-		let messges = await getMessages(channel.id);
-		console.log(messges);
-		
-		//들고온 메시지 렌더링
-		
-	});
 });
 async function getMessages(channelId){
 	let res = await fetch(`/api/v1/chat/messages/${channelId}`);
@@ -61,9 +50,20 @@ async function getMessages(channelId){
 async function pageInit(){
 	let channels = await getChannel();
 	channels.forEach(channel => {
-		let $channelNode = $(getChannelNoe(channel));
+		let $channelNode = $(getChannelNode(channel));
 		$channelNode.data('channel', channel);
 		$('#channels').append($channelNode);
+	});
+	
+	$('#channels li').on('click', async (e)=>{
+	 	channel = $(e.target).closest("li").data('channel');
+		
+		//채널에 속한 메시지 들고오기
+		let messges = await getMessages(channel.id);
+		console.log(messges);
+		
+		//들고온 메시지 렌더링
+		
 	});
 }
 
@@ -115,7 +115,7 @@ function connect() {
 }
 
 function connectionSuccess() {
-	stompClient.subscribe('/sub/chat/' + name, onMessageReceived);
+//	stompClient.subscribe('/sub/chat/' + channel.id, onMessageReceived);
 }
 
 
@@ -127,13 +127,12 @@ function sendMessage(){
 		return;
 	}
 	
-	stompClient.send("/pub/chat/" + name, {}, JSON.stringify({
+	stompClient.send("/pub/chat/" + channel.id, {}, JSON.stringify({
 		content : message,
-		sender : name
+		sender : member.name
 	}))
 	
 	$('#sendMessage').val("");
-	
 }
 
 function onMessageReceived(message){
@@ -189,17 +188,15 @@ function getMeChatNode(chatMessage){
             </li>`;
 }
 
-function getChannelNoe(channel){
+function getChannelNode(channel){
 	return `<li>
-				<div class="channel">
-	                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
-	                <div>
-	                    <h2>${channel.name}</h2>
-	                    <h3>
-	                        <span class="status orange"></span>
-	                        offline
-	                    </h3>
-	                </div>
+                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
+                <div>
+                    <h2>${channel.name}</h2>
+                    <h3>
+                        <span class="status orange"></span>
+                        offline
+                    </h3>
                 </div>
             </li>`;
 }

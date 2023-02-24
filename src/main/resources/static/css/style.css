@@ -3,7 +3,9 @@
 }
 body{
 	background-color:#abd9e9;
-	font-family:Arial;
+	/* font-family:Arial; */
+	font-family:Georgia;
+	
 }
 #container{
 	/* width:750px; */
@@ -115,18 +117,21 @@ aside li h3{
 
 main header{
 	height:110px;
-	padding:30px 20px 30px 40px;
+	padding:30px 30px 30px 40px;
 }
 main header > *{
-	display:inline-block;
-	vertical-align:top;
+	/* display:inline-block; */
+	/* vertical-align:top; */
 }
 main header img:first-child{
 	border-radius:50%;
+	width: 50px;
+	height: 50px;
 }
 main header img:last-child{
-	width:24px;
+	width:25px;
 	margin-top:8px;
+	height: 30px;
 }
 main header div{
 	margin-left:10px;
@@ -172,7 +177,8 @@ main header h3{
 }
 #chat .message{
 	padding:20px;
-	color:#fff;
+	/* color:#fff; */
+	color: #3b3e49;
 	line-height:25px;
 	max-width:90%;
 	display:inline-block;
@@ -183,10 +189,11 @@ main header h3{
 	text-align:right;
 }
 #chat .you .message{
-	background-color:#58b666;
+	/* background-color:#58b666; */
+	background-color: white;
 }
 #chat .me .message{
-	background-color:#6fbced;
+	background-color:#99c9e7;
 }
 /* #chat .triangle{
 	width: 0;

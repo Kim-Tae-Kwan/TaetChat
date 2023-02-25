@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Insert title here</title>
+	<th:block th:replace="fragments/common::common"></th:block>
+	<link rel="stylesheet" href="/css/signup.css">
+	<script type="text/javascript" src="/js/AuthService.js"></script>
+	<script type="text/javascript" src="/js/signup.js"></script>
+</head>
+<body>
+	<div class="register-section">
+	    <div class="row justify-content-center">
+	        <div class="col-md-3"></div>
+	        <div class="col-md-3">
+	            <form method="post">
+				    <h1 class="mb-3 fw-normal text-center">Sign up</h1>
+				    <div class="form-floating mt-1">
+				      <input type="email" required class="form-control " id="email" name="email">
+				      <label for="email">Email address</label>
+				      <div id="emailFeedback" class="invalid-feedback">
+				        Email invalid.
+				      </div>
+				    </div>
+				    <div class="form-floating mt-1">
+				      <input type="text" required class="form-control " id="userName" name="username">
+				      <label for="userName">User Name</label>
+				      <div id="userNameFeedback" class="invalid-feedback">
+				        User Name invalid.
+				      </div>
+				    </div>
+				    <div class="form-floating mt-1">
+				      <input type="password" class="form-control " id="password" name="password">
+				      <label for="password">Password</label>
+				      <div id="passwordFeedback" class="invalid-feedback">
+				        Please invalid.
+				      </div>
+				    </div>
+				    <div class="form-floating mt-1">
+				      <input type="password" class="form-control " id="passwordComfirm">
+				      <label for="password-Comfirm">Password Comfirm</label>
+				    </div>
+				    <div class="checkbox mb-3">
+				    </div>
+				    <button class="w-100 btn btn-lg btn-primary" id="signup" type="submit">Sign in</button>
+				    <span class="mt-1 mx-auto text-center">Existing user? <a href="/login">Log In</a></span>
+				  </form>
+	        </div>
+	        <div class="col-md-3"></div>
+	    </div>
+	</div>
+</body>
+</html>

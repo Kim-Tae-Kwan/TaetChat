@@ -60,9 +60,9 @@ public class ChatService {
 	
 	public void saveChatMessage(PubChatMessage messageDto) {
 		// DTO -> Entity
-		
-		// Me
-		
+		ChatMessage chatMessage = chatMessageMapper.toEntity(messageDto);
+
 		// save
+		chatMessageRepository.save(chatMessage);
 	}
 }

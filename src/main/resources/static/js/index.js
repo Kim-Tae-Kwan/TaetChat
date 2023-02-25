@@ -1,11 +1,51 @@
 let stompClient = null;
-let member;
+let member = {
+	id : 1,
+	name : 'kim'
+};
 let channel;
 let num = 0;
 
-$(()=>{
-//	connect();
+$(async ()=>{
+	await init();
+	setEvent();
+});
 
+async function init(){
+	$('#channels').empty();
+	
+	let channels = await getChannel();
+	channel = channels[0]; 
+	channels.forEach(channel => {
+		let $channelNode = $(getChannelNode(channel));
+		$channelNode.data('channel', channel);
+		$('#channels').append($channelNode);
+	});
+	
+	$('#channels li').on('click', async (e)=>{
+	 	let selectedChannel = $(e.target).closest("li").data('channel');
+		
+		if(selectedChannel.id === channel.id) return;
+		
+		channel = selectedChannel;
+		
+		//채널에 속한 메시지 들고오기
+		let messges = await getMessages(channel.id);
+		console.log(messges);
+		
+		//들고온 메시지 렌더링
+		$('#chat').empty();
+		messges.forEach(message => {
+			let chatNode = getChatNode(message);
+			$('#chat').prepend(chatNode);
+		});
+		setScrollHeight();	
+	});
+	
+	stompConnect();
+}
+
+function setEvent(){
 	//입장 버튼
 	$('#modal button').on('click', async (e)=>{
 		e.preventDefault();
@@ -21,13 +61,8 @@ $(()=>{
 		
 		$('#modal').hide();
 		$('#container').show();
-		
 		connect();
-		
 	});
-	
-	
-	$('#chat').empty();
 	
 	// send 버튼
 	$('#send').on('click', sendMessage);
@@ -41,30 +76,34 @@ $(()=>{
 			}			
 		}
 	});
-});
+	
+	$('#channelAddBtn').on('click', async ()=>{
+		let channelName = $('#channelName').val();
+		createChannel(channelName);
+		$('#channelAddModal').modal('toggle');
+		await init();
+		
+	});
+}
+
+async function createChannel(channelName){
+	let res = await fetch(`/api/v1/chat/messages/channels`,{
+		method : 'post',
+		header: {
+			"Content-Type" : "application/json"
+		},
+		body : JSON.stringify(
+			{
+				"channelName" : channelName,
+				"memberId" : member.id
+			}
+		)
+	});
+}
+
 async function getMessages(channelId){
 	let res = await fetch(`/api/v1/chat/messages/${channelId}`);
 	return await res.json();
-}
-
-async function pageInit(){
-	let channels = await getChannel();
-	channels.forEach(channel => {
-		let $channelNode = $(getChannelNode(channel));
-		$channelNode.data('channel', channel);
-		$('#channels').append($channelNode);
-	});
-	
-	$('#channels li').on('click', async (e)=>{
-	 	channel = $(e.target).closest("li").data('channel');
-		
-		//채널에 속한 메시지 들고오기
-		let messges = await getMessages(channel.id);
-		console.log(messges);
-		
-		//들고온 메시지 렌더링
-		
-	});
 }
 
 async function getChannel(){
@@ -107,7 +146,7 @@ function createChannel(){
 	.then((res) => console.log(res));
 }
 
-function connect() {
+function stompConnect() {
 	var socket = new SockJS('/ws');
 	stompClient = Stomp.over(socket);
 
@@ -115,7 +154,7 @@ function connect() {
 }
 
 function connectionSuccess() {
-//	stompClient.subscribe('/sub/chat/' + channel.id, onMessageReceived);
+	stompClient.subscribe('/sub/chat/' + channel.id, onMessageReceived);
 }
 
 
@@ -128,8 +167,9 @@ function sendMessage(){
 	}
 	
 	stompClient.send("/pub/chat/" + channel.id, {}, JSON.stringify({
-		content : message,
-		sender : member.name
+		senderId : member.id,
+		channelId : channel.id,
+		content : message
 	}))
 	
 	$('#sendMessage').val("");
@@ -139,17 +179,19 @@ function onMessageReceived(message){
 	let chatMessage = JSON.parse(message.body);
 	chatMessage.content = chatMessage.content.replaceAll('\n', '<br/>'); 
 
-
-	let chatNode = '';
-	if(chatMessage.sender === name){
-		chatNode = getMeChatNode(chatMessage);
-	}else{
-		chatNode = getYouChatNode(chatMessage);
-	}
+	let chatNode = getChatNode(chatMessage)
 	
 	$('#chat').append(chatNode);
 	
 	setScrollHeight();
+}
+
+function getChatNode(chatMessage){
+	if(chatMessage.senderId === member.id){
+		return getMeChatNode(chatMessage);
+	}else{
+		return getYouChatNode(chatMessage);
+	}
 }
 
 function setScrollHeight(){
@@ -165,7 +207,7 @@ function getYouChatNode(chatMessage){
                     <div class="content vw-100">
                         <div class="entete">
                             <span class="status blue"></span>
-                            <h2>${chatMessage.sender}</h2>
+                            <h2>${chatMessage.senderName}</h2>
                             <h3>10:12AM, Today</h3>
                         </div>
                         <div class="message">
@@ -179,7 +221,7 @@ function getMeChatNode(chatMessage){
 	return `<li class="me">
                 <div class="entete">
                     <h3>10:12AM, Today</h3>
-                    <h2>${chatMessage.sender}</h2>
+                    <h2>${chatMessage.senderName}</h2>
                     <span class="status blue"></span>
                 </div>
                 <div class="message">

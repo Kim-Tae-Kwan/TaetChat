@@ -1,1 +1,1 @@
-docker run -d --name chatdb -e POSTGRES_PASSWORD={} -e POSTGRES_DB=chat -v {}:/var/lib/postgresql/data -p 5432:5432 postgres
+docker run -d --name chatdb -e POSTGRES_PASSWORD={} -e POSTGRES_DB=chat -v {}/dbData:/var/lib/postgresql/data -p 5432:5432 postgres

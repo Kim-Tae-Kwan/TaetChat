@@ -11,13 +11,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-import org.springframework.data.annotation.CreatedDate;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-public class ChatMessage {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChatMessage extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -30,7 +34,4 @@ public class ChatMessage {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "channelId", referencedColumnName = "id")
 	private Channel channel;
-	
-	@CreatedDate
-	private LocalDateTime createdAt;
 }

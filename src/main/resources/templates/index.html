@@ -14,6 +14,12 @@
 	<script src="/js/index.js"></script>
 </head>
 <body>
+	<form id="memberInfo">
+		<input type="hidden" name="id" th:value="${member.id}" />
+		<input type="hidden" name="name" th:value="${member.name}" />
+		<input type="hidden" name="email" th:value="${member.email}" />
+	</form>
+
 	<div id="modal" style="display: none;">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
@@ -39,9 +45,14 @@
                 </header>
                 <ul id="channels" style="height: 80%;">
                 </ul>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#channelAddModal">
+               	<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#channelAddModal">
 				  방 만들기
 				</button>
+				<form method="post" action="/logout">
+					<button type="submit" class="btn btn-danger">
+					  Logout
+					</button>
+				</form>
             </aside>
             <main class="col-md-10 vh-100">
                 <header class="d-flex justify-content-between" style="height: 10%;">

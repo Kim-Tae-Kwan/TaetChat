@@ -1,10 +1,6 @@
-let stompClient = null;
-let member = {
-	id : 1,
-	name : 'kim'
-};
+let stompClient;
+let member;
 let channel;
-let num = 0;
 
 $(async ()=>{
 	await init();
@@ -13,6 +9,8 @@ $(async ()=>{
 
 async function init(){
 	$('#channels').empty();
+	
+	member = getMemberObjet();
 	
 	let channels = await getChannel();
 	channel = channels[0]; 
@@ -43,6 +41,17 @@ async function init(){
 	});
 	
 	stompConnect();
+}
+
+function getMemberObjet(){
+	let member = {};
+	
+	let memberInfo = $('#memberInfo').serializeArray();
+	memberInfo.forEach(object => {
+		member[object['name']] = object['value']; 
+	});
+	
+	return member
 }
 
 function setEvent(){
@@ -187,7 +196,7 @@ function onMessageReceived(message){
 }
 
 function getChatNode(chatMessage){
-	if(chatMessage.senderId === member.id){
+	if(chatMessage.senderId == member.id){
 		return getMeChatNode(chatMessage);
 	}else{
 		return getYouChatNode(chatMessage);

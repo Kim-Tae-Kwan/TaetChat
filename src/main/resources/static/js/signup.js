@@ -61,12 +61,14 @@ $(() => {
 			if(userName === '') $(e.target).addClass('is-invalid');
 		}
 	});
+	
 	$('#password').on('keydown', (e) => {
 		let $this = $(e.target);
 		if($this.hasClass('is-invalid') === true){
 			$this.removeClass('is-invalid');
 		}
 	});
+	
 	$('#passwordComfirm').on('keydown', (e) => {
 		let $this = $(e.target);
 		if($this.hasClass('is-invalid') === true){

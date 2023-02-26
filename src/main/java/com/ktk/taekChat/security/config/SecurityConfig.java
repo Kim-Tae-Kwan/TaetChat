@@ -51,7 +51,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests()
 				.antMatchers("/api/v1/**").permitAll()
 				.antMatchers("/signup").permitAll()
-				.antMatchers("/").permitAll()
+//				.antMatchers("/").permitAll()
 				.antMatchers("/ws/**").permitAll()
 			.anyRequest()
 				.authenticated()

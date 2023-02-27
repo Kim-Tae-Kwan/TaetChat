@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import com.ktk.taekChat.rest.model.dto.ChatMessageDto;
 import com.ktk.taekChat.rest.service.ChatService;
 import com.ktk.taekChat.rest.service.MemberService;
 import com.ktk.taekChat.websocket.model.PubChatMessage;
@@ -22,13 +23,8 @@ public class ChatWebSocketController {
 	
 	@MessageMapping("/chat/{channelId}")
 	@SendTo("/sub/chat/{channelId}")
-	public SubChatMessage sendMessage(@Payload PubChatMessage message) throws Exception {
-		chatService.saveChatMessage(message);
-		
-		String senderName = memberService.getNameById(message.getSenderId());
-		SubChatMessage subChatMessage = message.toSubChatMessage();
-		subChatMessage.setSenderName(senderName);
-		
-		return subChatMessage;
+	public PubChatMessage sendMessage(@Payload PubChatMessage pubChatMessage) throws Exception {
+		chatService.saveChatMessage(pubChatMessage);
+		return pubChatMessage;
 	}
 }

@@ -1,6 +1,7 @@
 let stompClient;
 let member;
 let channel;
+let channelMember = {};
 
 $(async ()=>{
 	await init();
@@ -10,8 +11,10 @@ $(async ()=>{
 async function init(){
 	$('#channels').empty();
 	
+	// 로그인 사용자 정보 얻기
 	member = getMemberObjet();
 	
+	// 채널 정보들 얻기
 	let channels = await getChannel();
 	channel = channels[0]; 
 	channels.forEach(channel => {
@@ -20,6 +23,7 @@ async function init(){
 		$('#channels').append($channelNode);
 	});
 	
+	// 채널 UI 클릭 이벤트 설정.
 	$('#channels li').on('click', async (e)=>{
 	 	let selectedChannel = $(e.target).closest("li").data('channel');
 		
@@ -40,7 +44,19 @@ async function init(){
 		setScrollHeight();	
 	});
 	
+	let channelMembers = await getChannelMembers();
+	channelMembers.forEach((cm) => {
+		let key = cm.id;
+		channelMember[key] = cm;
+	});
+	
+		
 	stompConnect();
+}
+
+async function getChannelMembers(){
+	let res = await fetch(`/api/v1/members/${channel.id}`);
+	return await res.json();
 }
 
 function getMemberObjet(){
@@ -48,7 +64,12 @@ function getMemberObjet(){
 	
 	let memberInfo = $('#memberInfo').serializeArray();
 	memberInfo.forEach(object => {
-		member[object['name']] = object['value']; 
+		let key = object['name'];
+		let value = object['value']
+		
+		if(key === 'id') value = Number(value);
+	
+		member[key] = value; 
 	});
 	
 	return member

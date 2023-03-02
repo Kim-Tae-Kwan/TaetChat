@@ -30,7 +30,7 @@ public class MemberChannel {
 	@JoinColumn(name = "memberId", referencedColumnName = "id")
 	private Member member;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "channelId", referencedColumnName = "id")
 	private Channel channel;
 }

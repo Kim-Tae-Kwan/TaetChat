@@ -18,6 +18,7 @@ import com.ktk.taekChat.rest.model.entity.MemberChannel;
 import com.ktk.taekChat.rest.repository.ChannelRepository;
 import com.ktk.taekChat.rest.repository.ChatMessageRepository;
 import com.ktk.taekChat.rest.repository.MemberChannelRepository;
+import com.ktk.taekChat.rest.repository.MemberRepository;
 import com.ktk.taekChat.websocket.model.PubChatMessage;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class ChatService {
 	private final ChannelMapper channelMapper;
 	private final ChatMessageMapper chatMessageMapper;
+	
+	private final MemberRepository memberRepository;
 	private final ChannelRepository channelRepository;
 	private final ChatMessageRepository chatMessageRepository;
 	private final MemberChannelRepository memberChannelRepository;
@@ -66,5 +69,12 @@ public class ChatService {
 		ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 		
 		return chatMessageMapper.toDto(savedChatMessage); 
+	}
+	
+	@Transactional(rollbackOn = RuntimeException.class)
+	public void exitChannel(Long channelId, Long memberId) throws Exception {
+		Channel channel = channelRepository.getReferenceById(channelId);
+		Member member = memberRepository.getReferenceById(memberId);
+		memberChannelRepository.deleteByChannelAndMember(channel, member);
 	}
 }

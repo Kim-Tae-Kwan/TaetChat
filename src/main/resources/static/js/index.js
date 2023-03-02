@@ -47,7 +47,12 @@ async function init(){
 				let chatNode = getChatNode(message);
 				$('#chat').prepend(chatNode);
 			});
-			setScrollHeight();	
+			setScrollHeight();
+			
+			//badge 제거	
+			const badge = $(e.target).closest("li").find('.noRead');
+			badge.text('+0');
+			badge.hide();
 		});
 	}
 		
@@ -76,10 +81,10 @@ function setEvent(){
 	});
 }
 
-async function getChannelMembers(){
-	let res = await fetch(`/api/v1/members/${currChannel.id}`);
-	return await res.json();
-}
+//async function getChannelMembers(){
+//	let res = await fetch(`/api/v1/members/${currChannel.id}`);
+//	return await res.json();
+//}
 
 function getMemberObjet(){
 	let member = {};
@@ -130,13 +135,10 @@ function stompConnect() {
 }
 
 function connectionSuccess() {
-	
 	$.each($('.channel'), (idx, value) => {
-		console.log(idx);
+		const channel = $(value).data('channel'); 
+		stompClient.subscribe('/sub/chat/' + channel.id, onMessageReceived);	
 	});
-	
-	
-	stompClient.subscribe('/sub/chat/' + currChannel.id, onMessageReceived);
 }
 
 
@@ -159,12 +161,24 @@ function sendMessage(){
 function onMessageReceived(message){
 	let chatMessage = JSON.parse(message.body);
 	chatMessage.content = chatMessage.content.replaceAll('\n', '<br/>'); 
-
-	let chatNode = getChatNode(chatMessage)
 	
-	$('#chat').append(chatNode);
-	
-	setScrollHeight();
+	if(chatMessage.channel.id === currChannel.id){
+		let chatNode = getChatNode(chatMessage)
+		$('#chat').append(chatNode);
+		setScrollHeight();	
+	}else{
+		$.each($('.channel'), (_, value) => {
+			const channel = $(value).data('channel');
+			
+			if(chatMessage.channel.id === channel.id){
+				const badge = $(value).find('.noRead');
+				const count = Number(badge.text().substring(1)); 
+				$(value).find('.noRead').text(`+${count + 1}`);
+				badge.show();
+				return false;
+			}
+		});
+	}
 }
 
 function getChatNode(chatMessage){
@@ -221,5 +235,6 @@ function getChannelNode(channel){
                         offline
                     </h3>
                 </div>
+                <span class="badge bg-danger noRead">+4</span>
             </li>`;
 }

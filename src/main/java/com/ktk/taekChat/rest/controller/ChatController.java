@@ -3,9 +3,11 @@ package com.ktk.taekChat.rest.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,5 +40,11 @@ public class ChatController {
 	public ResponseEntity<Channel> createChannel(@RequestBody ChannelCreateDto channelCreateDto){
 		Channel savedChannel = chatService.createChannel(channelCreateDto);
 		return ResponseEntity.ok(savedChannel);
+	}
+	
+	@DeleteMapping("/channel/{channelId}/member/{memberId}")
+	public ResponseEntity<Channel> exitChannel(@PathVariable Long channelId, @PathVariable Long memberId) throws Exception{
+		chatService.exitChannel(channelId, memberId);
+		return ResponseEntity.ok().build();
 	}
 }

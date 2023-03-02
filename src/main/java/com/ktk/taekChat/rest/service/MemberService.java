@@ -36,6 +36,11 @@ public class MemberService {
 		return memberRepository.findNameById(id).orElseThrow(() -> new Exception("Not Found Memeber name by id : " + id));
 	}
 	
+	public MemberDto getMemberById(Long memberId) throws Exception {
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new Exception("Not Found Memeber by email : " + memberId));
+		return memberMapper.toDto(member);
+	}
+	
 	public MemberDto getMemberByEmail(String email) throws Exception {
 		Member member = memberRepository.findByEmail(email).orElseThrow(() -> new Exception("Not Found Memeber by email : " + email));
 		return memberMapper.toDto(member);

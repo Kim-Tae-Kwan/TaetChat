@@ -16,27 +16,7 @@
 <body>
 	<form id="memberInfo">
 		<input type="hidden" name="id" th:value="${member.id}" />
-		<input type="hidden" name="name" th:value="${member.name}" />
-		<input type="hidden" name="email" th:value="${member.email}" />
 	</form>
-
-	<div id="modal" style="display: none;">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-body">
-	        <form>
-				<h1 class="h3 mb-3 fw-normal">Insert your name</h1>
-				<div class="form-floating mb-1">
-					<input type="text" class="form-control" id="nameInput" placeholder="Your name">
-					<label for="floatingInput">Your name</label>
-				</div>
-				<button class="w-100 btn btn-lg btn-primary" type="submit">입장</button>
-			</form>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-	
     <div id="container" class="container-fluid" style="display: block;">
         <div class="row vh-100">
             <aside class="col-md-2 vh-100">
@@ -113,7 +93,7 @@
 			  <label for="floatingInput">방 이름</label>
 			</div>
 			<div class="d-flex flex-row-reverse">
-				<button type="button" class="btn btn-primary" id="channelAddBtn">Save changes</button>
+				<button type="button" class="btn btn-primary" id="channelAddBtn">만들기</button>
 			</div>
 	      </div>
 	    </div>

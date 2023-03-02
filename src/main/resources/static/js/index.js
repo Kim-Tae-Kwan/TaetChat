@@ -1,6 +1,9 @@
 let stompClient;
 let member;
-let channel;
+let currChannel = {
+	id : 1,
+	name : "kim"
+};
 let channelMember = {};
 
 $(async ()=>{
@@ -9,53 +12,69 @@ $(async ()=>{
 });
 
 async function init(){
-	$('#channels').empty();
-	
 	// 로그인 사용자 정보 얻기
 	member = getMemberObjet();
 	
 	// 채널 정보들 얻기
 	let channels = await getChannel();
-	channel = channels[0]; 
-	channels.forEach(channel => {
-		let $channelNode = $(getChannelNode(channel));
-		$channelNode.data('channel', channel);
-		$('#channels').append($channelNode);
-	});
-	
-	// 채널 UI 클릭 이벤트 설정.
-	$('#channels li').on('click', async (e)=>{
-	 	let selectedChannel = $(e.target).closest("li").data('channel');
+	if(channels.length > 0){
+		currChannel = channels[0]; 
+		$('#channels').empty();
 		
-		if(selectedChannel.id === channel.id) return;
+		channels.forEach(channel => {
+			let $channelNode = $(getChannelNode(channel));
+			$channelNode.data('channel', channel);
+			$('#channels').append($channelNode);
+		});	
 		
-		channel = selectedChannel;
-		
-		//채널에 속한 메시지 들고오기
-		let messges = await getMessages(channel.id);
-		console.log(messges);
-		
-		//들고온 메시지 렌더링
-		$('#chat').empty();
-		messges.forEach(message => {
-			let chatNode = getChatNode(message);
-			$('#chat').prepend(chatNode);
+		// 채널 UI 클릭 이벤트 설정.
+		$('#channels li').on('click', async (e)=>{
+		 	let selectedChannel = $(e.target).closest("li").data('channel');
+			
+			if(selectedChannel.id === currChannel.id) return;
+			
+			currChannel = selectedChannel;
+			
+			//채널에 속한 메시지 들고오기
+			let messges = await getMessages(currChannel.id);
+			
+			//들고온 메시지 렌더링
+			$('#chat').empty();
+			messges.forEach(message => {
+				let chatNode = getChatNode(message);
+				$('#chat').prepend(chatNode);
+			});
+			setScrollHeight();	
 		});
-		setScrollHeight();	
-	});
-	
-	let channelMembers = await getChannelMembers();
-	channelMembers.forEach((cm) => {
-		let key = cm.id;
-		channelMember[key] = cm;
-	});
-	
+	}
 		
 	stompConnect();
 }
 
+function setEvent(){
+	// send 버튼
+	$('#send').on('click', sendMessage);
+	
+	// Enter -> 전송
+	$("#sendMessage").on("keyup", (e)=>{
+		e.preventDefault();
+		if(e.keyCode === 13){
+			if (!e.shiftKey){
+				sendMessage();
+			}			
+		}
+	});
+	
+	$('#channelAddBtn').on('click', async ()=>{
+		let channelName = $('#channelName').val();
+		await createChannel(channelName);
+		$('#channelAddModal').modal('toggle');
+		await init();
+	});
+}
+
 async function getChannelMembers(){
-	let res = await fetch(`/api/v1/members/${channel.id}`);
+	let res = await fetch(`/api/v1/members/${currChannel.id}`);
 	return await res.json();
 }
 
@@ -75,51 +94,10 @@ function getMemberObjet(){
 	return member
 }
 
-function setEvent(){
-	//입장 버튼
-	$('#modal button').on('click', async (e)=>{
-		e.preventDefault();
-		
-		let name = $('#nameInput').val();
-		
-		if(name.trim() === '') return;
-		
-		//멤버 생성
-		await createMember(name);
-		
-		pageInit();
-		
-		$('#modal').hide();
-		$('#container').show();
-		connect();
-	});
-	
-	// send 버튼
-	$('#send').on('click', sendMessage);
-	
-	// Enter -> 전송
-	$("#sendMessage").on("keyup", (e)=>{
-		e.preventDefault();
-		if(e.keyCode === 13){
-			if (!e.shiftKey){
-				sendMessage();
-			}			
-		}
-	});
-	
-	$('#channelAddBtn').on('click', async ()=>{
-		let channelName = $('#channelName').val();
-		createChannel(channelName);
-		$('#channelAddModal').modal('toggle');
-		await init();
-		
-	});
-}
-
 async function createChannel(channelName){
-	let res = await fetch(`/api/v1/chat/messages/channels`,{
+	await fetch(`/api/v1/chat/channels`,{
 		method : 'post',
-		header: {
+		headers: {
 			"Content-Type" : "application/json"
 		},
 		body : JSON.stringify(
@@ -141,41 +119,6 @@ async function getChannel(){
 	return await res.json();
 }
 
-async function createMember(name){
-	let res = await fetch("/api/v1/members", {
-		method : "post",
-		headers:{
-			"Content-Type" : "application/json"
-		},
-		body : JSON.stringify(
-			{
-				"name" : name
-			}
-		)
-	});
-	
-	res = await res.json();
-	member = res;
-	console.log(member);
-}
-
-function createChannel(){
-	fetch("/api/v1/chat/channels", {
-		method : "post",
-		headers:{
-			"Content-Type" : "application/json"
-		},
-		body : JSON.stringify(
-			{
-				"channelName" : member.name,
-				"memberId" : member.id
-			}
-		)
-	})
-	.then((res) => res.json())
-	.then((res) => console.log(res));
-}
-
 function stompConnect() {
 	var socket = new SockJS('/ws');
 	stompClient = Stomp.over(socket);
@@ -184,7 +127,7 @@ function stompConnect() {
 }
 
 function connectionSuccess() {
-	stompClient.subscribe('/sub/chat/' + channel.id, onMessageReceived);
+	stompClient.subscribe('/sub/chat/' + currChannel.id, onMessageReceived);
 }
 
 
@@ -196,9 +139,8 @@ function sendMessage(){
 		return;
 	}
 	
-	stompClient.send("/pub/chat/" + channel.id, {}, JSON.stringify({
-		senderId : member.id,
-		channelId : channel.id,
+	stompClient.send("/pub/chat/" + currChannel.id, {}, JSON.stringify({
+		channelId : currChannel.id,
 		content : message
 	}))
 	
@@ -217,7 +159,7 @@ function onMessageReceived(message){
 }
 
 function getChatNode(chatMessage){
-	if(chatMessage.senderId == member.id){
+	if(chatMessage.sender.id == member.id){
 		return getMeChatNode(chatMessage);
 	}else{
 		return getYouChatNode(chatMessage);
@@ -237,8 +179,8 @@ function getYouChatNode(chatMessage){
                     <div class="content vw-100">
                         <div class="entete">
                             <span class="status blue"></span>
-                            <h2>${chatMessage.senderName}</h2>
-                            <h3>10:12AM, Today</h3>
+                            <h2>${chatMessage.sender.name}</h2>
+                            <h3>${chatMessage.createdAt.split(" ")[1]}</h3>
                         </div>
                         <div class="message">
                             ${chatMessage.content}
@@ -250,8 +192,8 @@ function getYouChatNode(chatMessage){
 function getMeChatNode(chatMessage){
 	return `<li class="me">
                 <div class="entete">
-                    <h3>10:12AM, Today</h3>
-                    <h2>${chatMessage.senderName}</h2>
+                    <h3>${chatMessage.createdAt.split(" ")[1]}</h3>
+                    <h2>${chatMessage.sender.name}</h2>
                     <span class="status blue"></span>
                 </div>
                 <div class="message">

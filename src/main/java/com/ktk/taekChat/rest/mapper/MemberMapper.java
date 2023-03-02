@@ -20,7 +20,6 @@ public abstract class MemberMapper {
 	@Mappings({
 		@Mapping(target = "id", source = "id"),
 		@Mapping(target = "name", source = "name"),
-		@Mapping(target = "email", source = "email"),
 	})
 	public abstract MemberDto toDto(Member member);
 	

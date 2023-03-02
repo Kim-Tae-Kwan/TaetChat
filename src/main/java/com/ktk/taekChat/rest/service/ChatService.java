@@ -58,11 +58,13 @@ public class ChatService {
 		return savedChannel;
 	}
 	
-	public void saveChatMessage(PubChatMessage messageDto) {
+	public ChatMessageDto saveChatMessage(PubChatMessage messageDto, Long memberId) {
 		// DTO -> Entity
-		ChatMessage chatMessage = chatMessageMapper.toEntity(messageDto);
+		ChatMessage chatMessage = chatMessageMapper.toEntity(messageDto, memberId);
 
 		// save
-		chatMessageRepository.save(chatMessage);
+		ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
+		
+		return chatMessageMapper.toDto(savedChatMessage); 
 	}
 }

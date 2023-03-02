@@ -26,7 +26,7 @@ public class ViewController {
 	@GetMapping("/")
 	public String index(@AuthenticationPrincipal User user, Model model) throws Exception {
 		
-		MemberDto member = memberService.getMemberByEmail(user.getUsername());
+		MemberDto member = memberService.getMemberById(Long.valueOf(user.getUsername()));
 		model.addAttribute("member", member);
 		
 		return "index";

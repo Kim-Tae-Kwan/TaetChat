@@ -29,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Member member = userOptional.get();
 //        Member member = userOptional.orElseThrow(() -> new Exception());
 
-        return new User(member.getEmail(), member.getPassword(), true, true, true, true, getAuthorities("USER"));
+        return new User(member.getId() + "", member.getPassword(), true, true, true, true, getAuthorities("USER"));
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(String role) {

@@ -23,7 +23,9 @@
                 <header style="height: 10%;">
                     <input type="text" placeholder="search">
                 </header>
-                <ul id="channels" style="height: 80%;">
+                <ul style="height: 80%;">
+                    <li class="text-white" id="publicChannel">Public</li>
+                    <li class="text-white" id="privateChannel">Private</li>
                 </ul>
                	<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#channelAddModal">
 				  방 만들기
@@ -35,51 +37,56 @@
 				</form>
             </aside>
             <main class="col-md-10 vh-100">
-                <header class="d-flex justify-content-between" style="height: 10%;">
-                    <div class="d-flex">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
-                        <div>
-                            <h2>Chat with Vincent Porter</h2>
-                            <h3>already 1902 messages</h3>
-                        </div>
-                    </div>
-                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">
-                </header>
-                <ul id="chat" style="height: 78%;">
-                    <!-- <li class="you d-flex">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" class="rounded-circle me-3" width="50px" height="50px" alt="">
-                        <div class="content vw-100">
-                            <div class="entete">
-                                <span class="status blue"></span>
-                                <h2>Vincent</h2>
-                                <h3>10:12AM, Today</h3>
-                            </div>
-                            <div class="message">
-                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            </div>
-                        </div>
-                    </li>
-                    <li class="me">
-                        <div class="entete">
-                            <h3>10:12AM, Today</h3>
-                            <h2>Vincent</h2>
-                            <span class="status blue"></span>
-                        </div>
-                        <div class="message">
-                            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                        </div>
-                    </li> -->
-                </ul>
-                <footer style="height: 10%;">
-                    <textarea id="sendMessage" placeholder="Type your message"></textarea>
-                    <div class="action">
-                        <div class="file">
-                            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_picture.png" alt="">
-                            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_file.png" alt="">
-                        </div>
-                        <a href="#" id="send">Send</a>
-                    </div>
-                </footer>
+            	<div id="noChannel">
+            		<span class="position-absolute top-50 start-50">채팅방을 만들어보세요.</span>
+            	</div>
+            	<div id="chatWrap" class="h-100" style="display: none;">
+	                <header class="d-flex justify-content-between" style="height: 10%;">
+	                    <div class="d-flex">
+	                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
+	                        <div>
+	                            <h2>Chat with Vincent Porter</h2>
+	                            <h3>already 1902 messages</h3>
+	                        </div>
+	                    </div>
+	                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">
+	                </header>
+	                <ul id="chat" style="height: 78%;">
+	                    <!-- <li class="you d-flex">
+	                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" class="rounded-circle me-3" width="50px" height="50px" alt="">
+	                        <div class="content vw-100">
+	                            <div class="entete">
+	                                <span class="status blue"></span>
+	                                <h2>Vincent</h2>
+	                                <h3>10:12AM, Today</h3>
+	                            </div>
+	                            <div class="message">
+	                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+	                            </div>
+	                        </div>
+	                    </li>
+	                    <li class="me">
+	                        <div class="entete">
+	                            <h3>10:12AM, Today</h3>
+	                            <h2>Vincent</h2>
+	                            <span class="status blue"></span>
+	                        </div>
+	                        <div class="message">
+	                            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+	                        </div>
+	                    </li> -->
+	                </ul>
+	                <footer style="height: 10%;">
+	                    <textarea id="sendMessage" placeholder="Type your message"></textarea>
+	                    <div class="action">
+	                        <div class="file">
+	                            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_picture.png" alt="">
+	                            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_file.png" alt="">
+	                        </div>
+	                        <a href="#" id="send">Send</a>
+	                    </div>
+	                </footer>
+                </div>
             </main>
         </div>
     </div>

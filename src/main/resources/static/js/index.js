@@ -18,17 +18,20 @@ async function init(){
 	// 채널 정보들 얻기
 	let channels = await getChannel();
 	if(channels.length > 0){
+		$('#noChannel').hide();
+		$('#chatWrap').show();
+		
 		currChannel = channels[0]; 
-		$('#channels').empty();
+		$('.channel').remove();
 		
 		channels.forEach(channel => {
 			let $channelNode = $(getChannelNode(channel));
 			$channelNode.data('channel', channel);
-			$('#channels').append($channelNode);
+			$('#publicChannel').after($channelNode);
 		});	
 		
 		// 채널 UI 클릭 이벤트 설정.
-		$('#channels li').on('click', async (e)=>{
+		$('li.channel').on('click', async (e)=>{
 		 	let selectedChannel = $(e.target).closest("li").data('channel');
 			
 			if(selectedChannel.id === currChannel.id) return;
@@ -127,6 +130,12 @@ function stompConnect() {
 }
 
 function connectionSuccess() {
+	
+	$.each($('.channel'), (idx, value) => {
+		console.log(idx);
+	});
+	
+	
 	stompClient.subscribe('/sub/chat/' + currChannel.id, onMessageReceived);
 }
 
@@ -203,7 +212,7 @@ function getMeChatNode(chatMessage){
 }
 
 function getChannelNode(channel){
-	return `<li>
+	return `<li class="channel">
                 <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
                 <div>
                     <h2>${channel.name}</h2>

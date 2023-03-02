@@ -65,10 +65,10 @@ aside ul::-webkit-scrollbar{
 	display: none;
 }
 
-aside li{
+aside li.channel{
 	padding:10px 0;
 }
-aside li:hover{
+aside li.channel:hover{
 	background-color:#5e616a;
 }
 h2,h3{

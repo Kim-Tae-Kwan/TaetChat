@@ -13,6 +13,7 @@ import com.ktk.taekChat.rest.model.entity.MemberChannel;
 public interface MemberChannelRepository extends JpaRepository<MemberChannel, Long>{
 	
 	List<MemberChannel> findAllByChannel(Channel channel);
+	List<MemberChannel> findAllByMember(Member member);
 	Optional<MemberChannel> findByChannelAndMember(Channel channel, Member member);
 	void deleteByChannelAndMember(Channel channel, Member member);
 }

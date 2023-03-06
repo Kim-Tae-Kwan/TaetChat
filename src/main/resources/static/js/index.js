@@ -1,9 +1,6 @@
 let stompClient;
 let member;
-let currChannel = {
-	id : 1,
-	name : "kim"
-};
+let currChannel;
 let channelMember = {};
 
 $(async ()=>{
@@ -14,48 +11,7 @@ $(async ()=>{
 async function init(){
 	// 로그인 사용자 정보 얻기
 	member = getMemberObjet();
-	
-	// 채널 정보들 얻기
-	let channels = await getChannel();
-	if(channels.length > 0){
-		$('#noChannel').hide();
-		$('#chatWrap').show();
-		
-		currChannel = channels[0]; 
-		$('.channel').remove();
-		
-		channels.forEach(channel => {
-			let $channelNode = $(getChannelNode(channel));
-			$channelNode.data('channel', channel);
-			$('#publicChannel').after($channelNode);
-		});	
-		
-		// 채널 UI 클릭 이벤트 설정.
-		$('li.channel').on('click', async (e)=>{
-		 	let selectedChannel = $(e.target).closest("li").data('channel');
-			
-			if(selectedChannel.id === currChannel.id) return;
-			
-			currChannel = selectedChannel;
-			
-			//채널에 속한 메시지 들고오기
-			let messges = await getMessages(currChannel.id);
-			
-			//들고온 메시지 렌더링
-			$('#chat').empty();
-			messges.forEach(message => {
-				let chatNode = getChatNode(message);
-				$('#chat').prepend(chatNode);
-			});
-			setScrollHeight();
-			
-			//badge 제거	
-			const badge = $(e.target).closest("li").find('.noRead');
-			badge.text('+0');
-			badge.hide();
-		});
-	}
-		
+	await initChannel();
 	stompConnect();
 }
 
@@ -79,12 +35,56 @@ function setEvent(){
 		$('#channelAddModal').modal('toggle');
 		await init();
 	});
+	
+	// 채널 UI 클릭 이벤트 설정.
+	$('#channels').on('click', 'li.channel', async (e)=>{
+	 	let selectedChannel = $(e.target).closest("li").data('channel');
+		
+		if(selectedChannel.id === currChannel.id) return;
+		
+		currChannel = selectedChannel;
+		
+		//채널에 속한 메시지 들고오기
+		let messges = await getMessages(currChannel.id);
+		
+		//들고온 메시지 렌더링
+		$('#chat').empty();
+		messges.forEach(message => {
+			let chatNode = getChatNode(message);
+			$('#chat').prepend(chatNode);
+		});
+		setScrollHeight();
+		
+		//badge 제거	
+		const badge = $(e.target).closest("li").find('.noRead');
+		badge.text('+0');
+		badge.hide();
+	});
+	
+	// 채널 나가기
+	$('#exitChannel').on('click', async ()=>{
+		await exitChannel();
+		await initChannel();
+	});
 }
 
-//async function getChannelMembers(){
-//	let res = await fetch(`/api/v1/members/${currChannel.id}`);
-//	return await res.json();
-//}
+async function initChannel(){
+	// 채널 정보들 얻기
+	let channels = await getChannel();
+	if(channels.length > 0){
+		$('#noChannel').hide();
+		$('#chatWrap').show();
+		
+		currChannel = channels[0]; 
+		$('.channel').remove();
+		
+		channels.forEach(channel => {
+			let $channelNode = $(getChannelNode(channel));
+			$channelNode.data('channel', channel);
+			$('#publicChannel').after($channelNode);
+		});	
+	}
+}
 
 function getMemberObjet(){
 	let member = {};
@@ -117,13 +117,17 @@ async function createChannel(channelName){
 	});
 }
 
+async function exitChannel(){
+	await fetch(`/api/v1/chat/channel/${currChannel.id}/member/${member.id}`,{ method : 'delete' });
+}
+
 async function getMessages(channelId){
 	let res = await fetch(`/api/v1/chat/messages/${channelId}`);
 	return await res.json();
 }
 
 async function getChannel(){
-	let res = await fetch("/api/v1/chat/channels");
+	let res = await fetch(`/api/v1/chat/channels?memberId=${member.id}`);
 	return await res.json();
 }
 

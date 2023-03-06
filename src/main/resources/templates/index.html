@@ -23,7 +23,7 @@
                 <header style="height: 10%;">
                     <input type="text" placeholder="search">
                 </header>
-                <ul style="height: 80%;">
+                <ul id="channels" style="height: 80%;">
                     <li class="text-white" id="publicChannel">Public</li>
                     <li class="text-white" id="privateChannel">Private</li>
                 </ul>
@@ -51,7 +51,7 @@
 	                    </div>
 	                    <div>
 	                    	<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">
-	                    	<button class="btn btn-danger">나가기</button>
+	                    	<button class="btn btn-danger" id="exitChannel">나가기</button>
 	                    </div>
 	                </header>
 	                <ul id="chat" style="height: 78%;">
@@ -98,6 +98,10 @@
 	  <div class="modal-dialog modal-dialog-centered">
 	    <div class="modal-content">
 	      <div class="modal-body">
+	      	<div class="d-flex justify-content-between mb-3">
+	      		<h5 class="modal-title">새 채팅</h5>
+	        	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	      	</div>
 	        <div class="form-floating mb-3">
 			  <input type="text" class="form-control" id="channelName" placeholder="방 이름">
 			  <label for="floatingInput">방 이름</label>

@@ -1,5 +1,6 @@
 package com.ktk.taekChat.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ktk.taekChat.rest.mapper.ChannelMapper;
 import com.ktk.taekChat.rest.mapper.ChatMessageMapper;
 import com.ktk.taekChat.rest.model.dto.ChannelCreateDto;
+import com.ktk.taekChat.rest.model.dto.ChannelDto;
 import com.ktk.taekChat.rest.model.dto.ChatMessageDto;
 import com.ktk.taekChat.rest.model.entity.Channel;
 import com.ktk.taekChat.rest.model.entity.ChatMessage;
@@ -34,8 +36,17 @@ public class ChatService {
 	private final ChatMessageRepository chatMessageRepository;
 	private final MemberChannelRepository memberChannelRepository;
 	
-	public List<Channel> findAllChannel() {
-		return channelRepository.findAll();
+	public List<ChannelDto> findAllChannel(Long memberId) {
+		Member member = memberRepository.getReferenceById(memberId);
+		List<MemberChannel> memberChannels = memberChannelRepository.findAllByMember(member);
+		
+		List<ChannelDto> channels = new ArrayList<>();
+		memberChannels.stream().forEach((memberChannel) -> {
+			Channel channel = memberChannel.getChannel();
+			channels.add(channelMapper.toDto(channel));
+		});
+		
+		return channels;
 	}
 	
 	public List<ChatMessageDto> findAllChatMessage(Long ChannelId){

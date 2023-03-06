@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ktk.taekChat.rest.model.dto.ChannelCreateDto;
+import com.ktk.taekChat.rest.model.dto.ChannelDto;
 import com.ktk.taekChat.rest.model.dto.ChatMessageDto;
 import com.ktk.taekChat.rest.model.entity.Channel;
 import com.ktk.taekChat.rest.service.ChatService;
@@ -32,8 +34,8 @@ public class ChatController {
 	}
 	
 	@GetMapping("/channels")
-	public ResponseEntity<List<Channel>> getAllChannel(){
-		return ResponseEntity.ok(chatService.findAllChannel());
+	public ResponseEntity<List<ChannelDto>> getAllChannel(@RequestParam Long memberId){
+		return ResponseEntity.ok(chatService.findAllChannel(memberId));
 	}
 	
 	@PostMapping("/channels")
